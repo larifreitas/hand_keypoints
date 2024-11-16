@@ -1,9 +1,10 @@
 import cv2
+from PIL import Image, ImageDraw
 import imageio
 
 # config
 video_path = "output_euamovoce_keypoints.avi"
-output_gif = "teste.gif"
+output_gif = "output_euamovoce_keypoints.gif"
 text = "eu amo voce"
 frame_rate = 10
 
@@ -16,7 +17,17 @@ while True:
         break
 
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frames.append(frame_rgb)
+    pil_img = Image.fromarray(frame_rgb)
+    draw = ImageDraw.Draw(pil_img)
+
+    text_bbox = draw.textbbox((0, 0), text, font=None)
+    text_width = text_bbox[2] - text_bbox[0]
+    text_height = text_bbox[3] - text_bbox[1]
+
+    draw.rectangle([(0, pil_img.height - text_height - 25), (pil_img.width, pil_img.height)],fill="black")
+    draw.text(((pil_img.width - text_width) / 2, pil_img.height - text_height - 20),text,fill="white",font=None,font_size=20)
+
+    frames.append(pil_img)
 
 cap.release()
 
